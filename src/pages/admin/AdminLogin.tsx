@@ -1,27 +1,27 @@
-import { useMemo, useState, type FormEvent } from 'react';
+import { useState, type FormEvent } from 'react';
 import { Link, Navigate, useNavigate } from 'react-router-dom';
 import Button from '../../components/ui/Button';
 
 const AUTH_KEY = 'reakt-sitekit-admin-auth';
 export const ADMIN_PASSWORD_KEY = 'reakt-sitekit-admin-password';
 
-const getExpectedPassword = () => {
+const getPasswordConfig = () => {
   const override = typeof window !== 'undefined' ? window.localStorage.getItem(ADMIN_PASSWORD_KEY) : null;
-  return (override || import.meta.env.VITE_ADMIN_PASSWORD || 'demo').trim();
+  const envPassword = import.meta.env.VITE_ADMIN_PASSWORD;
+  const expectedPassword = (override || envPassword || 'demo').trim();
+  const isDefaultDemoPassword = !override && (!envPassword || envPassword.trim() === 'demo') && expectedPassword === 'demo';
+
+  return { expectedPassword, isDefaultDemoPassword };
 };
 
 export default function AdminLogin() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
-  const expectedPassword = getExpectedPassword();
+  const { expectedPassword, isDefaultDemoPassword } = getPasswordConfig();
 
   const isAuthenticated =
     typeof window !== 'undefined' && window.localStorage.getItem(AUTH_KEY) === '1';
-
-  const message = useMemo(() => {
-    return `Use password: ${expectedPassword}`;
-  }, [expectedPassword]);
 
   if (isAuthenticated) {
     return <Navigate to='/admin' replace />;
@@ -36,7 +36,7 @@ export default function AdminLogin() {
       return;
     }
 
-    setError('Wrong password. Use the demo password shown below.');
+    setError(isDefaultDemoPassword ? 'Wrong password. Use the demo password shown below.' : 'Wrong password.');
   };
 
   return (
@@ -53,11 +53,13 @@ export default function AdminLogin() {
             <div className='rounded-2xl border border-white/10 bg-white/5 p-4 text-sm text-slate-200'>
               <p className='mb-1 font-medium'>Current local development mode</p>
               <p className='text-slate-300'>
-                Use the password below or set <code className='rounded bg-slate-800 px-1.5 py-1'>VITE_ADMIN_PASSWORD</code>{' '}
-                in your environment.
+                Use the starter demo password locally, or set{' '}
+                <code className='rounded bg-slate-800 px-1.5 py-1'>VITE_ADMIN_PASSWORD</code> in your environment.
               </p>
             </div>
-            <p className='rounded-xl border border-white/15 bg-white/5 p-3 text-sm text-slate-200'>{message}</p>
+            <p className='rounded-xl border border-white/15 bg-white/5 p-3 text-sm text-slate-200'>
+              {isDefaultDemoPassword ? 'Demo password: demo' : 'A custom password is configured. The hint is hidden.'}
+            </p>
           </div>
 
           <form onSubmit={handleSubmit} className='space-y-4'>
