@@ -73,25 +73,20 @@ npm run dev
 
 ## Admin Login
 
-The default demo password is:
+Local Vite development uses a demo-only fallback password:
 
 ```txt
 demo
 ```
 
-To set your own password, copy `.env.example` to `.env.local`:
-
-```bash
-cp .env.example .env.local
-```
-
-Then edit `.env.local`:
+For deployed sites, set server-only environment variables on Vercel, Netlify, or your Node host:
 
 ```txt
-VITE_ADMIN_PASSWORD=your-password-here
+ADMIN_PASSWORD=your-password-here
+ADMIN_SESSION_SECRET=your-long-random-session-secret
 ```
 
-Restart the dev server after changing `.env.local`.
+Do not prefix admin auth values with `VITE_`. Vite exposes `VITE_*` values to the public browser bundle.
 
 ## Edit The Website
 
@@ -168,7 +163,7 @@ npm run preview
    - Install command: `npm install`
    - Build command: `npm run build`
    - Output directory: `dist`
-4. Add `VITE_ADMIN_PASSWORD` in Vercel environment variables if needed.
+4. Add `ADMIN_PASSWORD` and `ADMIN_SESSION_SECRET` in Vercel environment variables.
 5. Deploy.
 
 ### Netlify
@@ -181,13 +176,13 @@ Build command: npm run build
 Publish directory: dist
 ```
 
-3. Add `VITE_ADMIN_PASSWORD` in Netlify environment variables if needed.
+3. Add `ADMIN_PASSWORD` and `ADMIN_SESSION_SECRET` in Netlify environment variables.
 
 ## Important Notes
 
 - The starter uses browser `localStorage` for demo editing.
 - For a live production site with team editing, connect a real backend or CMS.
-- Admin login is intentionally simple for starter/demo use. Replace it with production authentication before using it for sensitive content.
+- Admin login uses server-side password verification on Vercel/Netlify. Static-only hosts can still show the public site, but they cannot protect `/admin` without an auth backend.
 - Do not commit `.env.local` to GitHub.
 
 ## Troubleshooting
@@ -199,10 +194,9 @@ rm -rf node_modules package-lock.json
 npm install
 ```
 
-If the admin password does not update:
+If the deployed admin password does not update:
 
-1. Stop the dev server.
-2. Check `.env.local`.
-3. Start again with `npm run dev`.
+1. Check `ADMIN_PASSWORD` in your host environment variables.
+2. Redeploy the site after changing host env vars.
 
 If saved content seems missing, check whether you are using a different browser or cleared browser storage.

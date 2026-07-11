@@ -43,4 +43,4 @@ Test both deploy buttons:
 - Vercel should use `npm run build` and `dist`.
 - Netlify should use `npm run build` and `dist`.
 
-Add `VITE_ADMIN_PASSWORD` in the host environment variables before sharing a production site.
+Add `ADMIN_PASSWORD` and `ADMIN_SESSION_SECRET` in the host environment variables before sharing a production site.

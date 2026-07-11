@@ -6,7 +6,7 @@ Reakt WebKit is a production-ready React + TypeScript + Tailwind CSS starter for
 
 - [Use this template](https://github.com/ReaktDev/reakt-webkit/generate)
 - [Open in GitHub Codespaces](https://codespaces.new/ReaktDev/reakt-webkit)
-- [Deploy to Vercel](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FReaktDev%2Freakt-webkit&project-name=reakt-webkit&repository-name=reakt-webkit&framework=vite&env=VITE_ADMIN_PASSWORD&envDescription=Admin%20dashboard%20password%20for%20Reakt%20WebKit&envLink=https%3A%2F%2Fgithub.com%2FReaktDev%2Freakt-webkit%2Fblob%2Fmain%2F.env.example)
+- [Deploy to Vercel](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FReaktDev%2Freakt-webkit&project-name=reakt-webkit&repository-name=reakt-webkit&framework=vite&env=ADMIN_PASSWORD&env=ADMIN_SESSION_SECRET&envDescription=Server-only%20admin%20password%20and%20session%20signing%20secret%20for%20Reakt%20WebKit&envLink=https%3A%2F%2Fgithub.com%2FReaktDev%2Freakt-webkit%2Fblob%2Fmain%2F.env.example)
 - [Deploy to Netlify](https://app.netlify.com/start/deploy?repository=https://github.com/ReaktDev/reakt-webkit)
 
 ## What this starter is
@@ -175,7 +175,7 @@ Build command: npm run build
 Output directory: dist
 ```
 
-Add optional env vars from `.env.example`, especially `VITE_ADMIN_PASSWORD`.
+Add server-only env vars from `.env.example`, especially `ADMIN_PASSWORD` and `ADMIN_SESSION_SECRET`.
 
 ### Netlify
 
@@ -188,15 +188,17 @@ Build command: npm run build
 Publish directory: dist
 ```
 
-Add optional env vars from `.env.example`, especially `VITE_ADMIN_PASSWORD`.
+Add server-only env vars from `.env.example`, especially `ADMIN_PASSWORD` and `ADMIN_SESSION_SECRET`.
 
 ### Static hosts
 
 Run `npm run build` and upload `dist`.
 
+Static-only hosts can serve the public website, but the admin dashboard needs the included Vercel or Netlify serverless auth endpoints to protect `/admin`.
+
 ## FAQ
 
-- Login is demo-style. For production, swap in proper auth in `src/pages/admin/AdminLogin.tsx`.
+- Admin login uses server-side password verification on Vercel/Netlify and a signed session token in the browser.
 - Storage is local only in starter mode; connect a real backend for team sync.
 - Section names are editable, and sections/pages can be fully restructured in dashboard.
 

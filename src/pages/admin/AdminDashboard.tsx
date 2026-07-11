@@ -5,9 +5,9 @@ import Input from '../../components/ui/Input';
 import Textarea from '../../components/ui/Textarea';
 import { useSiteConfig } from '../../context/SiteConfigContext';
 import { createId } from '../../lib/utils';
+import { clearAdminSession, verifyAdminSession } from '../../lib/adminAuth';
 import { normalizeConfig, pullConfigFromStorage, pushConfigToStorage, testStorageConnection } from '../../lib/configStorage';
 import { defaultSectionStyle, defaultSiteConfig } from '../../config/defaultSiteConfig';
-import { ADMIN_PASSWORD_KEY } from './AdminLogin';
 import type {
   BuiltInSectionType,
   BackendIntegrationProvider,
@@ -26,8 +26,6 @@ import type {
   ThemePreset,
 } from '../../types/site';
 import SitePageContent from '../../components/site/SitePageContent';
-
-const AUTH_KEY = 'reakt-sitekit-admin-auth';
 
 type DashboardTab =
   | 'Overview'
@@ -442,7 +440,7 @@ const getIntegrationEnvSnippet = (
   apiEndpoint: string,
   webhookUrl: string,
 ) => {
-  const lines = ['VITE_ADMIN_PASSWORD=demo'];
+  const lines = ['ADMIN_PASSWORD=change-this-password', 'ADMIN_SESSION_SECRET=change-this-long-random-secret'];
 
   lines.push(`VITE_REAKT_BACKEND_PROVIDER=${backendProvider}`);
   lines.push(`VITE_REAKT_CONFIG_ID=${configId || 'site'}`);
@@ -509,6 +507,8 @@ export default function AdminDashboard() {
   const [newSectionType, setNewSectionType] = useState<BuiltInSectionType>('custom');
   const [newSectionLabel, setNewSectionLabel] = useState('');
   const [newPassword, setNewPassword] = useState('');
+  const [adminSessionSecret, setAdminSessionSecret] = useState('');
+  const [authStatus, setAuthStatus] = useState<'checking' | 'authenticated' | 'anonymous'>('checking');
   const [selectedSectionId, setSelectedSectionId] = useState('');
   const [selectedPagesNavPageId, setSelectedPagesNavPageId] = useState('');
   const [isSectionEditFocus, setIsSectionEditFocus] = useState(false);
@@ -523,8 +523,7 @@ export default function AdminDashboard() {
   const [integrationStatusMessage, setIntegrationStatusMessage] = useState('');
 
   const importInputRef = useRef<HTMLInputElement>(null);
-
-  const isAuthenticated = typeof window !== 'undefined' && window.localStorage.getItem(AUTH_KEY) === '1';
+  const isAuthenticated = authStatus === 'authenticated';
 
   const selectedPage = useMemo(() => {
     return config.pages.find((page) => page.id === selectedPageId) ?? config.pages[0];
@@ -560,10 +559,17 @@ export default function AdminDashboard() {
   }, [selectedPage, selectedPagesNavPageId, config.pages]);
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const savedPassword = window.localStorage.getItem(ADMIN_PASSWORD_KEY) || '';
-      setNewPassword(savedPassword);
-    }
+    let isMounted = true;
+
+    verifyAdminSession().then((valid) => {
+      if (isMounted) {
+        setAuthStatus(valid ? 'authenticated' : 'anonymous');
+      }
+    });
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   useEffect(() => {
@@ -618,7 +624,7 @@ export default function AdminDashboard() {
 
   const logout = () => {
     if (typeof window !== 'undefined') {
-      window.localStorage.removeItem(AUTH_KEY);
+      clearAdminSession();
       window.location.assign('/admin/login');
     }
   };
@@ -986,20 +992,34 @@ export default function AdminDashboard() {
     }
   };
 
+  const generateAdminSecret = () => {
+    if (typeof window === 'undefined' || !window.crypto?.getRandomValues) {
+      return 'replace-with-a-long-random-secret';
+    }
+
+    const bytes = new Uint8Array(32);
+    window.crypto.getRandomValues(bytes);
+    const secret = Array.from(bytes, (byte) => byte.toString(16).padStart(2, '0')).join('');
+    setAdminSessionSecret(secret);
+    touchStatus('Session secret generated.');
+    return secret;
+  };
+
   const downloadEnvFile = () => {
     if (typeof window === 'undefined' || !newPassword.trim()) {
-      touchStatus('Set a password to generate .env file.');
+      touchStatus('Set an admin password to generate env file.');
       return;
     }
 
-    const content = `VITE_ADMIN_PASSWORD=${newPassword.trim()}\n`;
+    const secret = adminSessionSecret.trim() || generateAdminSecret();
+    const content = `ADMIN_PASSWORD=${newPassword.trim()}\nADMIN_SESSION_SECRET=${secret}\n`;
     const blob = new Blob([content], { type: 'text/plain' });
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
-    link.download = '.env.local';
+    link.download = '.env';
     link.click();
     URL.revokeObjectURL(link.href);
-    touchStatus('Downloaded .env.local');
+    touchStatus('Downloaded server env file.');
   };
 
   const testIntegrationConnection = async () => {
@@ -4299,41 +4319,44 @@ export default function AdminDashboard() {
             <div className='admin-editor-settings-list'>
               <div className='admin-editor-setting-row'>
                 <div className='admin-editor-setting-copy'>
-                  <p>Admin password</p>
-                  <span>Set the local dashboard password used for admin access.</span>
+                  <p>Production admin password</p>
+                  <span>Generate server-only environment variables for Vercel, Netlify, or your Node host.</span>
                 </div>
                 <div className='admin-editor-setting-fields'>
-                  <Input
-                    label='Admin dashboard password'
-                    value={newPassword}
-                    onChange={(event) => setNewPassword(event.target.value)}
-                  />
+                  <div className='admin-editor-setting-fields admin-editor-setting-fields--two'>
+                    <Input
+                      label='ADMIN_PASSWORD'
+                      value={newPassword}
+                      placeholder='Choose a strong password'
+                      onChange={(event) => setNewPassword(event.target.value)}
+                    />
+                    <Input
+                      label='ADMIN_SESSION_SECRET'
+                      value={adminSessionSecret}
+                      placeholder='Generated signing secret'
+                      onChange={(event) => setAdminSessionSecret(event.target.value)}
+                    />
+                  </div>
                   <div className='admin-editor-setting-actions'>
                     <Button
-                      onClick={() => {
-                        if (typeof window !== 'undefined') {
-                          window.localStorage.setItem(ADMIN_PASSWORD_KEY, newPassword.trim() || 'demo');
-                        }
-                        touchStatus('Password saved to local storage.');
-                      }}
+                      variant='outline'
+                      onClick={generateAdminSecret}
                     >
                       <span className='admin-editor-button-content'>
                         <svg viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round' aria-hidden='true'>
-                          <path d='M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z' />
-                          <path d='M17 21v-8H7v8' />
-                          <path d='M7 3v5h8' />
+                          <path d='M12 3v18' />
+                          <path d='M5 8h14' />
+                          <path d='M7 16h10' />
                         </svg>
-                        Save password
+                        Generate secret
                       </span>
                     </Button>
                     <Button
                       variant='outline'
                       onClick={() => {
-                        if (typeof window !== 'undefined') {
-                          window.localStorage.removeItem(ADMIN_PASSWORD_KEY);
-                          setNewPassword('');
-                        }
-                        touchStatus('Password override cleared.');
+                        setNewPassword('');
+                        setAdminSessionSecret('');
+                        touchStatus('Security fields cleared.');
                       }}
                     >
                       <span className='admin-editor-button-content'>
@@ -4346,21 +4369,33 @@ export default function AdminDashboard() {
                       </span>
                     </Button>
                   </div>
+                  <p className='admin-editor-muted-note'>
+                    These values belong in your host environment variables. They are not prefixed with `VITE_`, so they
+                    are not bundled into the public website.
+                  </p>
                 </div>
               </div>
 
               <div className='admin-editor-setting-row'>
                 <div className='admin-editor-setting-copy'>
                   <p>Environment snippet</p>
-                  <span>Generate a ready-to-use value for `.env.local`.</span>
+                  <span>Copy these into your host environment variables. Local Vite dev keeps using `demo`.</span>
                 </div>
                 <div className='admin-editor-setting-fields'>
-                  <code className='admin-editor-code-snippet'>VITE_ADMIN_PASSWORD={newPassword.trim() || 'demo'}</code>
+                  <pre className='admin-editor-code-block'>
+                    {`ADMIN_PASSWORD=${newPassword.trim() || 'change-this-password'}\nADMIN_SESSION_SECRET=${
+                      adminSessionSecret.trim() || 'change-this-long-random-secret'
+                    }`}
+                  </pre>
                   <div className='admin-editor-setting-actions'>
                     <Button
                       variant='outline'
                       onClick={async () => {
-                        await navigator.clipboard.writeText(`VITE_ADMIN_PASSWORD=${newPassword.trim() || 'demo'}`);
+                        await navigator.clipboard.writeText(
+                          `ADMIN_PASSWORD=${newPassword.trim() || 'change-this-password'}\nADMIN_SESSION_SECRET=${
+                            adminSessionSecret.trim() || 'change-this-long-random-secret'
+                          }`,
+                        );
                         touchStatus('Snippet copied.');
                       }}
                     >
@@ -4466,6 +4501,7 @@ export default function AdminDashboard() {
     isConfigLoading,
     isConfigSaving,
     isWorkspaceBusy,
+    adminSessionSecret,
     newPassword,
     selectedPage,
     storageError,
@@ -4473,6 +4509,18 @@ export default function AdminDashboard() {
     handleExport,
     hasUnsavedChanges,
   ]);
+
+  if (authStatus === 'checking') {
+    return (
+      <main className='admin-auth-shell'>
+        <section className='admin-auth-card sitekit-glow rounded-3xl border border-white/20 bg-slate-950/90 p-6 md:p-8'>
+          <p className='admin-auth-kicker'>Editor session</p>
+          <h1 className='mt-3 text-3xl font-semibold leading-tight'>Checking access</h1>
+          <p className='mt-3 text-sm text-slate-300'>Verifying your signed admin session.</p>
+        </section>
+      </main>
+    );
+  }
 
   if (!isAuthenticated) {
     return <Navigate to='/admin/login' replace />;

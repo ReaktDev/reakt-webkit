@@ -44,7 +44,7 @@ For users who only want to publish:
 
 1. Push or fork the repository on GitHub.
 2. Import it into Vercel or Netlify.
-3. Add `VITE_ADMIN_PASSWORD` as an environment variable.
+3. Add `ADMIN_PASSWORD` and `ADMIN_SESSION_SECRET` as environment variables.
 4. Deploy.
 
 This avoids local setup entirely.

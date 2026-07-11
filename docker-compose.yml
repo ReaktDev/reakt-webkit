@@ -7,4 +7,5 @@ services:
       - .:/app
       - /app/node_modules
     environment:
-      - VITE_ADMIN_PASSWORD=demo
+      - ADMIN_PASSWORD=demo
+      - ADMIN_SESSION_SECRET=local-docker-session-secret
