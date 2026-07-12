@@ -40,16 +40,6 @@ export default function AdminLogin() {
               Access your comprehensive website editor to design pages, reorder sections, tune SEO, and publish workspace
               snapshots.
             </p>
-            <div className='rounded-2xl border border-white/10 bg-white/5 p-4 text-sm text-slate-200'>
-              <p className='mb-1 font-medium'>Server-protected admin access</p>
-              <p className='text-slate-300'>
-                Deploy with <code className='rounded bg-slate-800 px-1.5 py-1'>ADMIN_PASSWORD</code> and{' '}
-                <code className='rounded bg-slate-800 px-1.5 py-1'>ADMIN_SESSION_SECRET</code> on your host.
-              </p>
-            </div>
-            <p className='rounded-xl border border-white/15 bg-white/5 p-3 text-sm text-slate-200'>
-              Local development fallback: <strong>demo</strong>. Production password hints are never shown in the browser.
-            </p>
           </div>
 
           <form onSubmit={handleSubmit} className='space-y-4'>
