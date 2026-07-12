@@ -30,11 +30,6 @@ export default function HeroSection({
   sectionId?: string;
 }) {
   const ctaId = useMemo(() => `${headline.slice(0, 4)}-${Date.now()}`.replace(/\W/g, '-').toLowerCase(), [headline]);
-  const proofItems = ['No-code editing', 'Local storage + export', 'Production-ready sections'];
-  const supportingLines = [
-    'Built to pass stakeholder reviews in minutes.',
-    'Designed for agencies, consultants, clinics, contractors, and studios.',
-  ];
 
   const ctaGroup = (
     <div className='flex flex-wrap gap-3'>
@@ -47,16 +42,17 @@ export default function HeroSection({
     </div>
   );
 
-  const proofPills = (
-    <div className='mt-5 flex flex-wrap gap-2'>
-      {proofItems.map((label) => (
-        <span
-          key={label}
-          className='inline-flex items-center rounded-full border border-[var(--sitekit-card-border)] bg-[var(--sitekit-surface-soft)] px-3 py-1.5 text-xs text-[var(--sitekit-text-muted)]'
-        >
-          {label}
-        </span>
-      ))}
+  const heroVisual = (
+    <div className='sitekit-card relative min-h-[24rem] overflow-hidden rounded-[2rem] border border-[var(--sitekit-card-border)] bg-[var(--sitekit-surface-soft)]'>
+      {imageUrl ? (
+        <img
+          src={imageUrl}
+          alt={imageAlt || headline}
+          className='absolute inset-0 h-full w-full object-cover'
+        />
+      ) : (
+        <div className='absolute inset-0 bg-[radial-gradient(circle_at_25%_20%,rgba(79,140,255,0.28),transparent_34%),radial-gradient(circle_at_80%_18%,rgba(59,217,175,0.18),transparent_32%),linear-gradient(135deg,var(--sitekit-card-bg),var(--sitekit-surface-soft))]' />
+      )}
     </div>
   );
 
@@ -70,14 +66,6 @@ export default function HeroSection({
           </h1>
           <p className='mx-auto max-w-2xl text-lg site-text-muted'>{subheading}</p>
           <div className='flex justify-center'>{ctaGroup}</div>
-          <div className='grid max-w-3xl gap-3 text-sm site-text-subtle sm:grid-cols-2'>
-            {supportingLines.map((line) => (
-              <p key={line} className='rounded-2xl border border-[var(--sitekit-card-border)] bg-[var(--sitekit-surface-soft)] px-4 py-3'>
-                {line}
-              </p>
-            ))}
-          </div>
-          {proofPills}
         </div>
       );
     }
@@ -94,23 +82,7 @@ export default function HeroSection({
             {ctaGroup}
           </div>
 
-          <div className='sitekit-card rounded-3xl border border-[var(--sitekit-card-border)] p-6'>
-            <p className='text-xs uppercase tracking-[0.22em] text-[var(--sitekit-accent)]'>Proof stack</p>
-            <div className='mt-5 grid gap-3'>
-              {supportingLines.map((line) => (
-                <p key={line} className='rounded-2xl border border-[var(--sitekit-card-border)] bg-[var(--sitekit-surface-soft)] px-4 py-3 text-sm site-text-muted'>
-                  {line}
-                </p>
-              ))}
-            </div>
-            <div className='mt-5 grid gap-2'>
-              {proofItems.map((label) => (
-                <span key={label} className='text-sm font-semibold text-[var(--sitekit-text-primary)]'>
-                  {label}
-                </span>
-              ))}
-            </div>
-          </div>
+          {heroVisual}
         </div>
       );
     }
@@ -125,25 +97,9 @@ export default function HeroSection({
             </h1>
             <p className='max-w-2xl text-lg site-text-muted'>{subheading}</p>
             {ctaGroup}
-            {proofPills}
           </div>
 
-          <div className='sitekit-card relative min-h-[24rem] overflow-hidden rounded-[2rem] border border-[var(--sitekit-card-border)] bg-[var(--sitekit-surface-soft)]'>
-            {imageUrl ? (
-              <img
-                src={imageUrl}
-                alt={imageAlt || headline}
-                className='absolute inset-0 h-full w-full object-cover'
-              />
-            ) : (
-              <div className='absolute inset-0 grid place-items-center bg-[var(--sitekit-card-bg)] p-8 text-center'>
-                <div>
-                  <p className='text-xs uppercase tracking-[0.22em] text-[var(--sitekit-accent)]'>Hero image</p>
-                  <p className='mt-3 text-sm site-text-muted'>Add an image URL in the Hero content controls.</p>
-                </div>
-              </div>
-            )}
-          </div>
+          {heroVisual}
         </div>
       );
     }
@@ -159,14 +115,6 @@ export default function HeroSection({
         <p className='max-w-2xl text-lg site-text-muted'>{subheading}</p>
 
         {ctaGroup}
-
-        <div className='mt-3 grid max-w-xl gap-2 text-sm site-text-subtle sm:grid-cols-2'>
-          {supportingLines.map((line) => (
-            <p key={line}>{line}</p>
-          ))}
-        </div>
-
-        {proofPills}
       </div>
     );
   };

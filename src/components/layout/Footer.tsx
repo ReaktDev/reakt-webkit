@@ -71,7 +71,7 @@ export default function Footer({
     { label: 'FAQ', href: '#faq' },
     { label: 'Contact', href: '#contact' },
   ];
-  const description = settings?.description?.trim() || 'Built with Reakt WebKit for premium service businesses.';
+  const description = settings?.description?.trim() || `${businessName} builds dependable service experiences.`;
   const showNavigation = settings?.showNavigation ?? true;
   const showSocialLinks = settings?.showSocialLinks ?? true;
   const showContactEmail = settings?.showContactEmail ?? true;

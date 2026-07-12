@@ -44,7 +44,7 @@ export const defaultSiteConfig: SiteConfig = {
   tagline: 'Premium service systems for growth-minded teams.',
   logoUrl: '',
   hero: {
-    kicker: 'Service website starter · Open source',
+    kicker: 'Premium service systems',
     headline: 'Premium service execution with measurable results for growing businesses',
     subheading:
       'From operations to client delivery, we give your team a modern website that reflects trust, speed, and expertise.',
@@ -77,7 +77,7 @@ export const defaultSiteConfig: SiteConfig = {
   about: {
     title: 'Built for service teams that care about quality',
     description:
-      'This starter helps agencies, consultants, clinics, contractors, and local firms launch a professional web presence in minutes while preserving your voice and trust. Replace the demo content with your own business details and publish.',
+      'Northline Consulting helps growing service teams refine operations, strengthen client delivery, and present a clear standard of trust from the first conversation.',
     highlights: [
       'Senior team on every project',
       'Transparent communication and progress updates',
@@ -86,10 +86,10 @@ export const defaultSiteConfig: SiteConfig = {
     stats: ['15+ years experience', '4.8 / 5 client satisfaction', '45+ projects launched'],
   },
   finalCta: {
-    eyebrow: 'Built for action',
-    headline: 'Ready to launch your premium service website quickly?',
-    text: 'Use this dashboard to replace every section with your own business voice and publish confidently.',
-    buttonLabel: 'Start building in dashboard',
+    eyebrow: 'Next step',
+    headline: 'Ready to improve the way your service team operates?',
+    text: 'Bring your offer, client journey, and operational priorities into one focused plan your team can execute.',
+    buttonLabel: 'Request a consultation',
   },
   testimonials: [
     {
@@ -117,37 +117,37 @@ export const defaultSiteConfig: SiteConfig = {
     {
       id: createId('step'),
       title: 'Build',
-      description: 'We wire clean sections, CMS-like form fields, and SEO foundation in a starter that ships fast.',
-      outcome: 'A premium website shell with conversion-first sections.',
+      description: 'We turn service details, proof points, and client needs into a clear conversion path.',
+      outcome: 'A polished customer journey with focused calls to action.',
     },
     {
       id: createId('step'),
       title: 'Launch',
-      description: 'You review copy and branding directly from the dashboard and publish on Vercel, Netlify, or your host.',
-      outcome: 'An editable live site your team can own.',
+      description: 'We finalize messaging, review every touchpoint, and prepare the team for confident handoff.',
+      outcome: 'A live service experience your team can keep improving.',
     },
   ],
   faq: [
     {
       id: createId('faq'),
-      question: 'Can a non-developer edit the website?',
+      question: 'How quickly can we get started?',
       answer:
-        'Yes. The dashboard is built for non-technical owners with form-based editing, live preview, and one-click save.',
+        'Most engagements begin with a focused discovery session where we map priorities, constraints, and the fastest path to measurable improvement.',
     },
     {
       id: createId('faq'),
-      question: 'Do I need a separate backend?',
+      question: 'Can you improve an existing service process?',
       answer:
-        'Not for the starter mode. Content is stored locally in the browser. You can later connect Firebase, Supabase, or CMS easily.',
+        'Yes. We can refine an existing journey, simplify handoffs, and strengthen the points where prospects and clients need the most clarity.',
     },
     {
       id: createId('faq'),
-      question: 'Can I use this for clinics or consultants?',
+      question: 'What kinds of teams do you work with?',
       answer:
-        'Absolutely. The section set is neutral and works well for agencies, coaches, contractors, clinics, and local service firms.',
+        'We work with service-led businesses that want sharper positioning, better operational flow, and a more confident client experience.',
     },
   ],
-  contactEmail: 'hello@northline.example',
+  contactEmail: 'hello@northlineconsulting.com',
   contact: {
     intro: 'Tell us what you need, and we will reply with a practical plan in one business day.',
     serviceLabel: 'Service needed',
@@ -209,21 +209,21 @@ export const defaultSiteConfig: SiteConfig = {
     styleSettings: defaultSectionStyle,
   },
   footer: {
-    description: 'Built with Reakt WebKit for premium service businesses.',
+    description: 'Premium service systems for growth-minded teams.',
     showNavigation: true,
     showSocialLinks: true,
     showContactEmail: true,
     showCta: true,
     ctaLabel: 'See services',
     copyrightText: 'All rights reserved.',
-    releaseText: 'Reakt WebKit starter release.',
+    releaseText: '',
     fullWidth: true,
     styleSettings: defaultSectionStyle,
   },
   seo: {
-    title: 'Reakt WebKit for Service Businesses',
+    title: 'Northline Consulting | Premium Service Systems',
     description:
-      'A production-ready, configurable website for service teams with a simple admin dashboard.',
+      'Northline Consulting helps growing service teams refine operations, strengthen client delivery, and build trust through clearer systems.',
   },
   analytics: {
     provider: 'none',
